@@ -1,6 +1,6 @@
 # gcc -O2 -fopenmp -Wall -lm
 # En macOS, /usr/bin/gcc suele ser Clang sin OpenMP. Se busca un GCC de
-# Homebrew (gcc-15 ... gcc-11) y, si no hay, Clang con libomp.
+# Homebrew (gcc-17 ... gcc-11) y, si no hay, Clang con libomp.
 
 UNAME_S := $(shell uname -s)
 
@@ -12,7 +12,7 @@ ifeq ($(origin CC),default)
 endif
 
 ifeq ($(UNAME_S),Darwin)
-  BREW_GCC := $(shell command -v gcc-15 2>/dev/null || command -v gcc-14 2>/dev/null || command -v gcc-13 2>/dev/null || command -v gcc-12 2>/dev/null || command -v gcc-11 2>/dev/null || true)
+  BREW_GCC := $(shell command -v gcc-17 2>/dev/null || command -v gcc17 2>/dev/null || command -v gcc-16 2>/dev/null || command -v gcc16 2>/dev/null || command -v gcc-15 2>/dev/null || command -v gcc-14 2>/dev/null || command -v gcc-13 2>/dev/null || command -v gcc-12 2>/dev/null || command -v gcc-11 2>/dev/null || true)
   ifneq ($(BREW_GCC),)
     CC = $(BREW_GCC)
   else

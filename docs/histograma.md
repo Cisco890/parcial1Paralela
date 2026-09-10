@@ -62,4 +62,21 @@ La generacion de datos se mantiene secuencial para preservar la repetibilidad de
 
 ## Resultados individuales
 
-Se completa en la corrida final de cada integrante.
+### Francisco Martinez
+
+- Maquina: AMD Ryzen AI 7 350 w/ Radeon 860M
+- Nucleos: 8 fisicos (16 hilos de hardware)
+- Sistema: Linux
+- Compilacion: `make all` (`gcc -O2 -fopenmp -Wall -lm`)
+- Medicion: promedio de 3 corridas; Speedup(p) = T_secuencial / T_paralelo(p); Eficiencia(p) = Speedup(p) / p
+- Fuente: `docs/resultados/histograma_tiempos_juanfrancisco.csv`
+
+| Hilos | Tiempo (s) | Speedup | Eficiencia |
+| --- | --- | --- | --- |
+| secuencial (T1) | 0.022446 | 1.000000 | 1.000000 |
+| 1 | 0.017542 | 1.279558 | 1.279558 |
+| 2 | 0.010365 | 2.165557 | 1.082779 |
+| 4 | 0.010257 | 2.188359 | 0.547090 |
+| 8 | 0.007082 | 3.169444 | 0.396180 |
+
+La version paralela si reduce el tiempo, pero el speedup maximo es de 3.17x con 8 hilos. Con 2 hilos la eficiencia se mantiene cerca de 1; a partir de 4 hilos cae con fuerza (0.55 y 0.40). El tiempo secuencial es de apenas 22 ms: con N = 10,000,000 el overhead de crear hilos y mezclar histogramas locales pesa mas que el trabajo util, y el escalado se aplana entre 2 y 4 hilos.

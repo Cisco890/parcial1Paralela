@@ -25,7 +25,7 @@ make all
 make clean
 ```
 
-Los cuatro binarios se compilan con optimización `-O2` y OpenMP. En Linux se usa `gcc -fopenmp`. En macOS, `gcc` del sistema suele ser Clang sin OpenMP; el Makefile busca un GCC de Homebrew (`gcc-14`, `gcc-13`, …) y, si no está, Clang con `libomp`:
+Los cuatro binarios se compilan con optimización `-O2` y OpenMP. En Linux se usa `gcc -fopenmp`. En macOS, `gcc` del sistema suele ser Clang sin OpenMP; el Makefile busca un GCC de Homebrew (`gcc-17`, `gcc-16`, `gcc-15`, …) y, si no está, Clang con `libomp`:
 
 ```bash
 brew install gcc

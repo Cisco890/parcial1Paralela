@@ -36,4 +36,22 @@ El histograma necesito una estrategia mas elaborada porque su segundo ciclo trab
 
 ## Resultados individuales
 
-Se completa en la corrida final de cada integrante.
+### Francisco Martinez
+
+- Maquina: AMD Ryzen AI 7 350 w/ Radeon 860M
+- Nucleos: 8 fisicos (16 hilos de hardware)
+- Sistema: Linux
+- Compilacion: `make all` (`gcc -O2 -fopenmp -Wall -lm`)
+- Intervalo de prueba: a = 0, b = 100
+- Medicion: promedio de 3 corridas; Speedup(p) = T_secuencial / T_paralelo(p); Eficiencia(p) = Speedup(p) / p
+- Fuente: `docs/resultados/riemann_tiempos_juanfrancisco.csv`
+
+| Hilos | Tiempo (s) | Speedup | Eficiencia |
+| --- | --- | --- | --- |
+| secuencial (T1) | 7.047440 | 1.000000 | 1.000000 |
+| 1 | 7.122148 | 0.989510 | 0.989510 |
+| 2 | 3.735724 | 1.886499 | 0.943249 |
+| 4 | 2.023296 | 3.483148 | 0.870787 |
+| 8 | 1.460862 | 4.824165 | 0.603021 |
+
+La version paralela mejora de forma clara: de 7.05 s secuenciales a 1.46 s con 8 hilos (speedup 4.82x). Con 2 y 4 hilos la eficiencia se mantiene alta (0.94 y 0.87). En 8 hilos baja a 0.60, coherente con usar los 8 nucleos fisicos y empezar a competir por recursos compartidos. Este problema escala mejor que el histograma porque cada iteracion es independiente y el trabajo (10^9 rectangulos) amortiza el overhead de OpenMP.
