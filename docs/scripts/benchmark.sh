@@ -8,7 +8,46 @@ REPS=3
 A=0
 B=100
 OUTDIR="docs/resultados"
-THREADS=(1 2 4 8)
+
+detect_ncores() {
+    local n=""
+    case "$(uname -s)" in
+        Darwin)
+            n="$(sysctl -n hw.physicalcpu 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || true)"
+            ;;
+        Linux)
+            if [[ -r /proc/cpuinfo ]]; then
+                n="$(awk -F: '/physical id/ { p=$2 } /core id/ { print p, $2 }' /proc/cpuinfo \
+                    | sort -u | wc -l | awk '{ print $1 }')"
+            fi
+            if [[ -z "$n" || "$n" == "0" ]]; then
+                n="$(nproc 2>/dev/null || getconf _NPROCESSORS_ONLN 2>/dev/null || true)"
+            fi
+            ;;
+        *)
+            n="$(getconf _NPROCESSORS_ONLN 2>/dev/null || true)"
+            ;;
+    esac
+    n="$(printf '%s' "$n" | tr -d '[:space:]')"
+    if [[ -z "$n" || "$n" == "0" ]]; then
+        n=1
+    fi
+    printf '%s\n' "$n"
+}
+
+NCORES="$(detect_ncores)"
+THREADS=(1)
+if [[ "$NCORES" -ge 2 ]]; then
+    THREADS=(1 2)
+fi
+if [[ "$NCORES" -ge 4 ]]; then
+    THREADS=(1 2 4)
+fi
+if [[ "$NCORES" -ge 8 ]]; then
+    THREADS=(1 2 4 8)
+fi
+
+echo "SO=$(uname -s) nucleos=${NCORES} hilos=${THREADS[*]}" >&2
 
 mkdir -p "$OUTDIR"
 make all
@@ -33,9 +72,9 @@ run_once() {
 
     if [[ "$kind" == "riemann" ]]; then
         if [[ -n "$threads" ]]; then
-            out="$(echo "$A $B" | OMP_NUM_THREADS="$threads" "$bin")"
+            out="$(printf '%s %s\n' "$A" "$B" | OMP_NUM_THREADS="$threads" "$bin")"
         else
-            out="$(echo "$A $B" | "$bin")"
+            out="$(printf '%s %s\n' "$A" "$B" | "$bin")"
         fi
     else
         if [[ -n "$threads" ]]; then
@@ -55,10 +94,12 @@ measure_avg() {
     local sum="0"
     local i t
 
-    for i in $(seq 1 "$REPS"); do
+    i=1
+    while [[ "$i" -le "$REPS" ]]; do
         t="$(run_once "$kind" "$bin" "$threads")"
         echo "  corrida ${i}/${REPS}: ${t}s" >&2
         sum="$(awk -v s="$sum" -v x="$t" 'BEGIN { printf "%.12f", s + x }')"
+        i=$((i + 1))
     done
 
     awk -v s="$sum" -v n="$REPS" 'BEGIN { printf "%.6f", s / n }'

@@ -17,3 +17,20 @@ Estructura del repositorio:
 - `/secuencial` — implementaciones originales, con medición de tiempo comparable.
 - `/paralelo` — versiones OpenMP de Histograma y Suma de Riemann.
 - `/docs` — contexto, estrategia de paralelización, scripts de benchmark y evidencia de corridas.
+
+## Compilación (Linux y macOS)
+
+```bash
+make all
+make clean
+```
+
+Los cuatro binarios se compilan con optimización `-O2` y OpenMP. En Linux se usa `gcc -fopenmp`. En macOS, `gcc` del sistema suele ser Clang sin OpenMP; el Makefile busca un GCC de Homebrew (`gcc-14`, `gcc-13`, …) y, si no está, Clang con `libomp`:
+
+```bash
+brew install gcc
+# o, como alternativa:
+brew install libomp
+```
+
+El script `docs/scripts/benchmark.sh` corre en ambos sistemas: detecta núcleos, recorta la lista 1/2/4/8 si la máquina tiene menos de 8, y alimenta `a`/`b` por stdin en Suma de Riemann.
