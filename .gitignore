@@ -1,0 +1,13 @@
+# Binarios compilados
+secuencial/histograma
+secuencial/riemann
+paralelo/histograma_omp
+paralelo/riemann_omp
+
+# Objetos y artefactos de compilación
+*.o
+*.out
+*.dSYM/
+
+# Archivos de sistema
+.DS_Store
