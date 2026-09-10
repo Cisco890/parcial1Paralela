@@ -55,3 +55,23 @@ El histograma necesito una estrategia mas elaborada porque su segundo ciclo trab
 | 8 | 1.460862 | 4.824165 | 0.603021 |
 
 La version paralela mejora de forma clara: de 7.05 s secuenciales a 1.46 s con 8 hilos (speedup 4.82x). Con 2 y 4 hilos la eficiencia se mantiene alta (0.94 y 0.87). En 8 hilos baja a 0.60, coherente con usar los 8 nucleos fisicos y empezar a competir por recursos compartidos. Este problema escala mejor que el histograma porque cada iteracion es independiente y el trabajo (10^9 rectangulos) amortiza el overhead de OpenMP.
+
+### Fernando Ruiz
+
+- Maquina: Apple M2
+- Nucleos: 8 fisicos (8 hilos de hardware)
+- Sistema: macOS 26.5.2
+- Compilacion: `make all` (`gcc-16 -O2 -fopenmp -Wall -lm`)
+- Intervalo de prueba: a = 0, b = 100
+- Medicion: promedio de 3 corridas; Speedup(p) = T_secuencial / T_paralelo(p); Eficiencia(p) = Speedup(p) / p
+- Fuente: `docs/resultados/riemann_tiempos_fernando.csv`
+
+| Hilos | Tiempo (s) | Speedup | Eficiencia |
+| --- | --- | --- | --- |
+| secuencial (T1) | 3.526959 | 1.000000 | 1.000000 |
+| 1 | 3.605438 | 0.978233 | 0.978233 |
+| 2 | 1.778868 | 1.982699 | 0.991349 |
+| 4 | 0.979912 | 3.599261 | 0.899815 |
+| 8 | 0.779108 | 4.526919 | 0.565865 |
+
+La mejora es clara y sostenida: de 3.53 s secuenciales a 0.78 s con 8 hilos, un speedup de 4.53x. Con 2 hilos la eficiencia es de 0.99, practicamente el escalado ideal, y con 4 hilos se mantiene alta en 0.90. En 8 hilos baja a 0.57, algo esperable al ocupar todos los nucleos fisicos de la maquina. Este problema escala mucho mejor que el histograma porque los 10^9 rectangulos amortizan de sobra el overhead de OpenMP y cada iteracion es independiente, sin ninguna estructura compartida de por medio.

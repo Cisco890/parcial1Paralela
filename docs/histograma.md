@@ -80,3 +80,22 @@ La generacion de datos se mantiene secuencial para preservar la repetibilidad de
 | 8 | 0.007082 | 3.169444 | 0.396180 |
 
 La version paralela si reduce el tiempo, pero el speedup maximo es de 3.17x con 8 hilos. Con 2 hilos la eficiencia se mantiene cerca de 1; a partir de 4 hilos cae con fuerza (0.55 y 0.40). El tiempo secuencial es de apenas 22 ms: con N = 10,000,000 el overhead de crear hilos y mezclar histogramas locales pesa mas que el trabajo util, y el escalado se aplana entre 2 y 4 hilos.
+
+### Fernando Ruiz
+
+- Maquina: Apple M2
+- Nucleos: 8 fisicos (8 hilos de hardware)
+- Sistema: macOS 26.5.2
+- Compilacion: `make all` (`gcc-16 -O2 -fopenmp -Wall -lm`)
+- Medicion: promedio de 3 corridas; Speedup(p) = T_secuencial / T_paralelo(p); Eficiencia(p) = Speedup(p) / p
+- Fuente: `docs/resultados/histograma_tiempos_fernando.csv`
+
+| Hilos | Tiempo (s) | Speedup | Eficiencia |
+| --- | --- | --- | --- |
+| secuencial (T1) | 0.020428 | 1.000000 | 1.000000 |
+| 1 | 0.021262 | 0.960775 | 0.960775 |
+| 2 | 0.011885 | 1.718805 | 0.859402 |
+| 4 | 0.006451 | 3.166641 | 0.791660 |
+| 8 | 0.007120 | 2.869101 | 0.358638 |
+
+El mejor resultado se obtiene con 4 hilos: 3.17x de speedup y eficiencia de 0.79. Con 8 hilos el tiempo empeora respecto a 4 (0.007120 s contra 0.006451 s), es decir que agregar mas hilos deja de ayudar. La causa es el tamano del problema: el tiempo secuencial es de apenas 20 ms, asi que el costo de crear los hilos y mezclar los histogramas locales alcanza a competir con el trabajo util. Con 1 hilo el speedup es 0.96, ligeramente por debajo de 1, que es el costo esperado de abrir la region paralela sin ganar nada a cambio.
