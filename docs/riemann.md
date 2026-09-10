@@ -75,3 +75,23 @@ La version paralela mejora de forma clara: de 7.05 s secuenciales a 1.46 s con 8
 | 8 | 0.779108 | 4.526919 | 0.565865 |
 
 La mejora es clara y sostenida: de 3.53 s secuenciales a 0.78 s con 8 hilos, un speedup de 4.53x. Con 2 hilos la eficiencia es de 0.99, practicamente el escalado ideal, y con 4 hilos se mantiene alta en 0.90. En 8 hilos baja a 0.57, algo esperable al ocupar todos los nucleos fisicos de la maquina. Este problema escala mucho mejor que el histograma porque los 10^9 rectangulos amortizan de sobra el overhead de OpenMP y cada iteracion es independiente, sin ninguna estructura compartida de por medio.
+
+### Iris Ayala
+
+- Maquina: Apple M1
+- Nucleos: 8 fisicos
+- Sistema: macOS 26.6.2
+- Compilacion: `make all` (`gcc-16 -O2 -fopenmp -Wall -lm`)
+- Intervalo de prueba: a = 0, b = 100
+- Medicion: promedio de 3 corridas; Speedup(p) = T_secuencial / T_paralelo(p); Eficiencia(p) = Speedup(p) / p
+- Fuente: `docs/resultados/riemann_tiempos_iris.csv`
+
+| Hilos | Tiempo (s) | Speedup | Eficiencia |
+| --- | --- | --- | --- |
+| secuencial (T1) | 3.593836 | 1.000000 | 1.000000 |
+| 1 | 3.613471 | 0.994566 | 0.994566 |
+| 2 | 1.819197 | 1.975507 | 0.987753 |
+| 4 | 0.967629 | 3.714064 | 0.928516 |
+| 8 | 0.964137 | 3.727516 | 0.465940 |
+
+La mejora es notoria hasta 4 hilos: de 3.59 s secuenciales a 0.97 s, un speedup de 3.71x con eficiencia de 0.93, cercana al escalado ideal. De 4 a 8 hilos el tiempo casi no baja (0.9676 s a 0.9641 s), por lo que el speedup se estanca en 3.73x y la eficiencia cae a la mitad (0.47). Esto es coherente con la arquitectura M1: sus 8 nucleos fisicos no son homogeneos (4 de alto rendimiento y 4 de eficiencia), asi que al pasar de 4 a 8 hilos el trabajo adicional cae en nucleos mas lentos y deja de aportar mejora real, aunque el problema en si siga siendo perfectamente paralelizable.
