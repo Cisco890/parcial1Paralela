@@ -99,3 +99,22 @@ La version paralela si reduce el tiempo, pero el speedup maximo es de 3.17x con 
 | 8 | 0.007120 | 2.869101 | 0.358638 |
 
 El mejor resultado se obtiene con 4 hilos: 3.17x de speedup y eficiencia de 0.79. Con 8 hilos el tiempo empeora respecto a 4 (0.007120 s contra 0.006451 s), es decir que agregar mas hilos deja de ayudar. La causa es el tamano del problema: el tiempo secuencial es de apenas 20 ms, asi que el costo de crear los hilos y mezclar los histogramas locales alcanza a competir con el trabajo util. Con 1 hilo el speedup es 0.96, ligeramente por debajo de 1, que es el costo esperado de abrir la region paralela sin ganar nada a cambio.
+
+### Iris Ayala
+
+- Maquina: Apple M1
+- Nucleos: 8 fisicos
+- Sistema: macOS 26.6.2
+- Compilacion: `make all` (`gcc-16 -O2 -fopenmp -Wall -lm`)
+- Medicion: promedio de 3 corridas; Speedup(p) = T_secuencial / T_paralelo(p); Eficiencia(p) = Speedup(p) / p
+- Fuente: `docs/resultados/histograma_tiempos_iris.csv`
+
+| Hilos | Tiempo (s) | Speedup | Eficiencia |
+| --- | --- | --- | --- |
+| secuencial (T1) | 0.022711 | 1.000000 | 1.000000 |
+| 1 | 0.022912 | 0.991227 | 0.991227 |
+| 2 | 0.011666 | 1.946768 | 0.973384 |
+| 4 | 0.007286 | 3.117074 | 0.779269 |
+| 8 | 0.006197 | 3.664838 | 0.458105 |
+
+El speedup crece de forma sostenida y llega a 3.66x con 8 hilos, el mejor resultado individual para Histograma entre las tres maquinas. Con 2 hilos la eficiencia es de 0.97, casi ideal, pero cae a 0.78 con 4 hilos y a 0.46 con 8. El tiempo secuencial vuelve a ser muy corto (22.7 ms), igual que en las otras dos maquinas, asi que el costo de crear la region paralela y mezclar los histogramas locales por hilo pesa cada vez mas sobre el trabajo util a medida que se agregan hilos. Con 1 hilo el speedup es 0.99, es decir practicamente el mismo tiempo que la version secuencial, el costo esperado de abrir la region paralela sin repartir trabajo entre varios hilos.
